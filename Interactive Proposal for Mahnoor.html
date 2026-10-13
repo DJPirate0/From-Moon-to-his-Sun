@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hey Mahnoor... ✨</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti for celebrations -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0F0B15',
+                        cardbg: '#1A1425',
+                        accentPink: '#FF5A87',
+                        glowPink: '#FF8DAA',
+                        accentPurple: '#A061FF',
+                        warmGold: '#FFD166',
+                    },
+                    fontFamily: {
+                        romantic: ['"Dancing Script"', 'cursive'],
+                        fredoka: ['"Fredoka"', 'sans-serif'],
+                        quicksand: ['"Quicksand"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0F0B15;
+            color: #F8F5FC;
+            font-family: 'Quicksand', sans-serif;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        .romantic-font {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        .title-font {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Glassmorphism card styling */
+        .glass-card {
+            background: rgba(26, 20, 37, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 90, 135, 0.25);
+            box-shadow: 0 10px 40px -10px rgba(160, 97, 255, 0.25);
+        }
+
+        .glow-btn {
+            box-shadow: 0 0 20px rgba(255, 90, 135, 0.5);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .glow-btn:hover {
+            box-shadow: 0 0 35px rgba(255, 90, 135, 0.8);
+            transform: scale(1.05);
+        }
+
+        .floating {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+
+        .pulse-heart {
+            animation: heartPulse 1.4s infinite;
+        }
+
+        @keyframes heartPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.18); }
+        }
+
+        /* Particle overlay canvas */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="min-h-screen relative flex flex-col justify-between items-center p-4 md:p-8">
+
+    <!-- Floating Heart & Star Canvas -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Header Controls -->
+    <header class="w-full max-w-2xl z-10 flex justify-between items-center mb-6">
+        <div class="flex items-center space-x-2 text-accentPink font-bold text-lg">
+            <i class="fa-solid fa-heart pulse-heart text-2xl text-accentPink"></i>
+            <span class="romantic-font text-2xl text-white">For Mahnoor</span>
+        </div>
+        <button id="soundToggle" onclick="toggleSound()" class="px-4 py-2 bg-cardbg rounded-full border border-accentPink/30 text-xs font-semibold text-glowPink hover:bg-accentPink/20 transition flex items-center gap-2">
+            <i id="soundIcon" class="fa-solid fa-volume-high"></i>
+            <span id="soundText">Sound ON</span>
+        </button>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="w-full max-w-2xl z-10 space-y-8 my-auto">
+
+        <!-- Intro Section -->
+        <div class="glass-card rounded-3xl p-6 md:p-10 text-center space-y-5 relative overflow-hidden">
+            <div class="inline-block px-4 py-1.5 bg-accentPink/15 border border-accentPink/30 rounded-full text-glowPink text-xs md:text-sm font-semibold tracking-wide floating">
+                ✨ A very important question for you...
+            </div>
+
+            <h1 class="text-4xl md:text-5xl romantic-font text-white leading-tight">
+                Hey Mahnoor... 💕
+            </h1>
+
+            <p class="text-gray-200 text-base md:text-lg leading-relaxed max-w-xl mx-auto">
+                My brain has roughly <span class="text-warmGold font-semibold">86 billion neurons</span>, and somehow 85.9 billion of them are currently thinking about you.
+            </p>
+
+            <p class="text-gray-300 text-sm md:text-base italic">
+                You're my favorite distraction, my favorite notification, and my absolute favorite person in the entire world.
+            </p>
+        </div>
+
+        <!-- Interactive Decision Box -->
+        <div id="proposalCard" class="glass-card rounded-3xl p-8 text-center relative overflow-hidden transition-all duration-500">
+            <!-- Default Proposal Form -->
+            <div id="proposalContent" class="space-y-6">
+                <div class="text-5xl floating">
+                    💖
+                </div>
+
+                <h2 class="text-2xl md:text-3xl title-font font-bold text-white">
+                    Mahnoor, will you be my person forever?
+                </h2>
+
+                <p class="text-gray-300 text-xs md:text-sm">
+                    (Choose wisely! The "NO" button is extremely shy 😜)
+                </p>
+
+                <!-- Action Buttons Container -->
+                <div id="buttonArea" class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 min-h-[140px] relative">
+                    <!-- YES Button -->
+                    <button id="yesBtn" onclick="acceptProposal()" class="glow-btn px-10 py-4 bg-gradient-to-r from-accentPink to-accentPurple text-white font-bold text-xl rounded-2xl w-full sm:w-auto z-20 flex items-center justify-center gap-2">
+                        <span>YES! 💖</span>
+                    </button>
+
+                    <!-- Runaway NO Button -->
+                    <button id="noBtn" onmouseover="dodgeNoButton()" onclick="dodgeNoButton()" ontouchstart="dodgeNoButton(event)" class="px-8 py-4 bg-gray-800/90 text-gray-400 border border-gray-700 font-semibold text-lg rounded-2xl transition-all duration-200 w-full sm:w-auto z-10">
+                        <span>NO 😜</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SUCCESS STATE (Hidden Initially) -->
+            <div id="successContent" class="hidden space-y-6 py-4 animate-fade-in">
+                <div class="text-6xl pulse-heart">
+                    👩‍❤️‍👨
+                </div>
+                <h2 class="text-4xl md:text-5xl romantic-font font-bold text-transparent bg-clip-text bg-gradient-to-r from-glowPink to-warmGold">
+                    I LOVE YOU MAHNOOR! ❤️
+                </h2>
+                <p class="text-gray-200 text-base md:text-lg max-w-lg mx-auto">
+                    You just made me the happiest person in the universe! I promise to always keep you smiling, share my snacks, and adore you endlessly.
+                </p>
+
+                <div class="pt-2">
+                    <button onclick="triggerConfetti()" class="glow-btn px-8 py-3 bg-accentPink/20 text-glowPink border border-accentPink/50 rounded-2xl font-bold hover:bg-accentPink hover:text-white transition flex items-center gap-2 mx-auto text-sm">
+                        <i class="fa-solid fa-sparkles"></i> More Celebrations! 🎉
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reason Cards Section -->
+        <div class="space-y-4">
+            <h3 class="text-center text-xl romantic-font text-glowPink text-2xl">
+                Why Mahnoor is top tier:
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Card 1 -->
+                <div onclick="playCardSound(0)" class="glass-card rounded-2xl p-5 text-center space-y-3 transform hover:-translate-y-1 transition duration-300 cursor-pointer group">
+                    <div class="text-3xl text-accentPink group-hover:scale-110 transition duration-300">
+                        ✨
+                    </div>
+                    <p class="text-sm text-gray-200 font-medium">
+                        Your smile single-handedly brightens my whole day.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div onclick="playCardSound(1)" class="glass-card rounded-2xl p-5 text-center space-y-3 transform hover:-translate-y-1 transition duration-300 cursor-pointer group">
+                    <div class="text-3xl text-warmGold group-hover:scale-110 transition duration-300">
+                        🌙
+                    </div>
+                    <p class="text-sm text-gray-200 font-medium">
+                        You make doing absolutely nothing feel like the best plan ever.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div onclick="playCardSound(2)" class="glass-card rounded-2xl p-5 text-center space-y-3 transform hover:-translate-y-1 transition duration-300 cursor-pointer group">
+                    <div class="text-3xl text-accentPurple group-hover:scale-110 transition duration-300">
+                        💖
+                    </div>
+                    <p class="text-sm text-gray-200 font-medium">
+                        You're my favorite human in the entire universe.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Toast Popup for Playful Messages -->
+    <div id="toast" class="fixed bottom-6 z-50 bg-accentPurple/90 text-white px-5 py-3 rounded-full text-xs md:text-sm font-semibold shadow-xl opacity-0 transition-all duration-300 pointer-events-none transform translate-y-4 flex items-center gap-2 border border-purple-400/30">
+        <i class="fa-solid fa-sparkles text-warmGold"></i> <span id="toastMsg">Message</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="z-10 mt-8 text-center text-xs text-gray-400">
+        Made with ❤️ specifically for Mahnoor
+    </footer>
+
+    <script>
+        // Web Audio API Synthesizer (No external audio files required)
+        let soundEnabled = true;
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playChime(freq = 520, duration = 0.15) {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(freq * 1.4, ctx.currentTime + duration);
+
+                gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {
+                console.log("Audio waiting for interaction");
+            }
+        }
+
+        function playVictoryJingle() {
+            if (!soundEnabled) return;
+            const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
+            notes.forEach((freq, i) => {
+                setTimeout(() => playChime(freq, 0.25), i * 100);
+            });
+        }
+
+        function playCardSound(index) {
+            const freqs = [440, 554.37, 659.25];
+            playChime(freqs[index % freqs.length], 0.2);
+            showToast(["You're lovely! ✨", "So special! 🌙", "Forever & always! 💖"][index]);
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            const text = document.getElementById('soundText');
+            if (soundEnabled) {
+                icon.className = 'fa-solid fa-volume-high';
+                text.innerText = 'Sound ON';
+                playChime(600);
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark';
+                text.innerText = 'Sound OFF';
+            }
+        }
+
+        // Dodging NO Button Logic
+        let dodgeCount = 0;
+        const dodgeMessages = [
+            "Nope, can't click me! 😜",
+            "Too fast for you! ⚡",
+            "Try clicking YES instead! 💕",
+            "Nice try, Mahnoor! 😉",
+            "Error: NO is not an option!"
+        ];
+
+        function dodgeNoButton(e) {
+            if (e) e.preventDefault();
+            const noBtn = document.getElementById('noBtn');
+            playChime(300, 0.08);
+
+            const area = document.getElementById('buttonArea');
+            const rect = area.getBoundingClientRect();
+
+            // Calculate random offset bounds inside button area
+            const randomX = (Math.random() - 0.5) * (rect.width - 120);
+            const randomY = (Math.random() - 0.5) * 100;
+
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+
+            showToast(dodgeMessages[dodgeCount % dodgeMessages.length]);
+            dodgeCount++;
+        }
+
+        // YES Button Celebration
+        function acceptProposal() {
+            playVictoryJingle();
+            triggerConfetti();
+
+            document.getElementById('proposalContent').classList.add('hidden');
+            const successContent = document.getElementById('successContent');
+            successContent.classList.remove('hidden');
+        }
+
+        function triggerConfetti() {
+            playChime(800, 0.2);
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 100,
+                    spread: 80,
+                    origin: { y: 0.6 },
+                    colors: ['#FF5A87', '#FF8DAA', '#A061FF', '#FFD166', '#FFFFFF']
+                });
+            }
+        }
+
+        // Toast Messages
+        let toastTimeout;
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.remove('opacity-0', 'translate-y-4');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-4');
+            }, 2000);
+        }
+
+        // Ambient Floating Hearts & Stars Canvas Engine
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + 20;
+                this.size = Math.random() * 14 + 10;
+                this.speedY = Math.random() * 0.8 + 0.3;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.opacity = Math.random() * 0.6 + 0.2;
+                this.symbol = ['💖', '✨', '🌸', '⭐', '💕'][Math.floor(Math.random() * 5)];
+            }
+
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                if (this.y < -30) this.reset();
+            }
+
+            draw() {
+                ctx.globalAlpha = this.opacity;
+                ctx.font = `${this.size}px sans-serif`;
+                ctx.fillText(this.symbol, this.x, this.y);
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 28; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.onload = function() {
+            initParticles();
+            animateParticles();
+        };
+    </script>
+</body>
+</html>
